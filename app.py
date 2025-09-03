@@ -90,7 +90,7 @@ def iou_score(pred_mask, gt_mask):
         return 0.0
     return intersection / union
 
-def predict_and_compare(best_model, mri_image_np, ground_truth_mask_np):
+def predict_and_compare(mri_image_np, ground_truth_mask_np):
     """Predicts a tumor mask and compares it to a ground truth mask."""
     mri_image_np = np.array(mri_image_np.convert('RGB')) if mri_pil_image else None
     ground_truth_mask_np = np.array(ground_truth_mask_np.convert('L')) if ground_truth_pil_mask else None
