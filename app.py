@@ -40,9 +40,9 @@ def load_model_from_gdrive():
         raise FileNotFoundError(f"No .safetensors file found in {PROJECT_PATH}. Please check your model saving process.")
     if len(safetensors_files) > 1:
         raise ValueError(f"Multiple .safetensors files found in {PROJECT_PATH}. Please ensure only one exists.")
+
     model_path = os.path.join(PROJECT_PATH, safetensors_files[0])
     print(f"Found and loading model from: {model_path}")
-
     MODEL_NAME = safetensors_file.split('.')[0]
     encode_name = MODEL_NAME.split('_')[1]
     model = smp.Unet(
@@ -58,13 +58,14 @@ def load_model_from_gdrive():
     model.eval()
     return model
 
-def predict_and_compare(mri_image_np, ground_truth_mask_np):
+def predict_and_compare(best_model, mri_image_np, ground_truth_mask_np):
     if best_model is None:
         return None, None, "Model not loaded. Please check the path and try again."    
     if mri_image_np is None:
         return None, None, "Error: Please upload a brain MRI image."
 
-    processed_image = mri_image_np.copy()
+    mri_img_np = cv2.cvtColor(mri_image_np, cv2.COLOR_BGR2RGB).copy()
+    processed_image = mri_img_np.copy()
     if not ('raw' in MODEL_NAME.split('_')[0].lower()):
         processed_image = apply_clahe_and_median_filter(processed_image)
     val_transform = A.Compose([
@@ -77,18 +78,17 @@ def predict_and_compare(mri_image_np, ground_truth_mask_np):
     with torch.no_grad():
         output = best_model(input_tensor)
       
-    pred_mask = (torch.sigmoid(output).squeeze().numpy() > 0.5).astype(np.uint8) * 255
+    pred_mask = (torch.sigmoid(output).squeeze().cpu().numpy() > 0.5).astype(np.uint8) * 255
     
-    overlay = mri_image_np.copy()
+    overlay = mri_img_np.copy()
     pred_mask_resized = cv2.resize(pred_mask, (mri_image_np.shape[1], mri_image_np.shape[0]))
     contours, _ = cv2.findContours(pred_mask_resized, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     cv2.drawContours(overlay, contours, -1, (255, 0, 0), 2)
 
     comparison_output = None
-    if ground_truth_mask_np is not None and ground_truth_mask_np.sum() > 0:
+    if ground_truth_mask_np is not None:
         gt_mask_resized = cv2.resize(ground_truth_mask_np, (mri_image_np.shape[1], mri_image_np.shape[0]))
-        
-        comparison_output = mri_image_np.copy()
+        comparison_output = mri_img_np.copy()
         gt_contours, _ = cv2.findContours(gt_mask_resized, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         pred_contours, _ = cv2.findContours(pred_mask_resized, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         cv2.drawContours(comparison_overlay, gt_contours, -1, (0, 255, 0), 2) # Green for Ground Truth
@@ -104,22 +104,23 @@ def main():
       print(f"Error loading model: {e}")
       best_model = None
     
-  with gr.Blocks(title="Brain Tumor Segmentation Demo") as demo:
+  with gr.Blocks(title="🧠") as demo:
       gr.Markdown("# Brain Tumor Segmentation Demo")
       gr.Markdown("Upload a brain MRI scan and an optional ground truth mask to see the predicted tumor segmentation.")
       
       with gr.Row():
-          with gr.Column():
+          with gr.Column(scale=1):
               mri_input = gr.Image(type="numpy", label="Upload Brain MRI (Required)")
               gt_mask_input = gr.Image(type="numpy", label="Upload Ground Truth Mask (Optional)")
-              run_button = gr.Button("Predict")
-          with gr.Column():
-              output_overlay = gr.Image(type="numpy", label="Predicted Mask Overlay")
-              comparison_output = gr.Image(type="numpy", label="Comparison (GT vs Pred)")
+              run_button = gr.Button("Predict", variant="primary")
+          with gr.Column(scale=2):
+              with gr.Row():
+                  output_overlay = gr.Image(type="numpy", label="Predicted Mask Overlay")
+                  comparison_output = gr.Image(type="numpy", label="Comparison (GT vs Pred)")
               status_text = gr.Textbox(label="Status")
       run_button.click(
           fn=predict_and_compare,
-          inputs=[mri_input, gt_mask_input],
+          inputs=[best_model, mri_input, gt_mask_input],
           outputs=[output_overlay, comparison_output, status_text])
       demo.launch(share=True)
 
