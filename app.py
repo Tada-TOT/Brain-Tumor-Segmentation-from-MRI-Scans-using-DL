@@ -65,7 +65,7 @@ def predict_and_compare(mri_image_np, ground_truth_mask_np):
         return None, None, "Error: Please upload a brain MRI image."
 
     processed_image = mri_image_np.copy()
-    if not ('raw' MODEL_NAME.split('_')[0].lower()):
+    if not ('raw' in MODEL_NAME.split('_')[0].lower()):
         processed_image = apply_clahe_and_median_filter(processed_image)
     val_transform = A.Compose([
         A.Resize(CFG['IMG_SIZE'], CFG['IMG_SIZE']),
