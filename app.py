@@ -83,8 +83,8 @@ def iou_score(pred_mask, gt_mask):
 
 def predict_and_compare(mri_image, ground_truth_mask):
     """Predicts a tumor mask and compares it to a ground truth mask."""
-    mri_image_np = np.array(mri_image_np.convert('RGB')) if mri_image_np else None
-    ground_truth_mask_np = np.array(ground_truth_mask_np.convert('L')) if ground_truth_mask_np else None
+    mri_image_np = np.array(mri_image.convert('RGB')) if mri_image_np else None
+    ground_truth_mask_np = np.array(ground_truth_mask.convert('L')) if ground_truth_mask_np else None
     if BEST_MODEL is None:
         return None, None, "Error: Model not loaded. Please check model path."
     if mri_image_np is None:
