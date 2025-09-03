@@ -127,7 +127,6 @@ def predict_and_compare(mri_image_np, ground_truth_mask_np):
         gt_mask_resized = cv2.resize(ground_truth_mask_np, (mri_image_np.shape[1], mri_image_np.shape[0]))
         dice = dice_score(pred_mask_resized, gt_mask_resized)
         iou = iou_score(pred_mask_resized, gt_mask_resized)
-        metrics_msg += f"Dice Score: {dice:.4f}\nIoU Score: {iou:.4f}"
         
         comparison_output = mri_img_np.copy()
         gt_contours, _ = cv2.findContours(gt_mask_resized, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
