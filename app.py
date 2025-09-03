@@ -171,7 +171,7 @@ def main():
             fn=clear_interface,
             inputs=[],
             outputs=[output_overlay, comparison_output, status_box])
-      demo.launch(share=True)
+    demo.launch(share=True)
 
 if __name__ == "__main__":
   main()
