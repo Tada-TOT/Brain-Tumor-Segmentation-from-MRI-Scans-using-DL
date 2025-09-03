@@ -177,7 +177,7 @@ def main():
                     dice_score_box = gr.Number(label="Dice Score", interactive=False, precision=4)
                     iou_score_box = gr.Number(label="IoU Score", interactive=False, precision=4)
                 status_box = gr.Textbox(label="Status", interactive=False, value=status_text)
-                gr.Markdown(f"**Model Name:** {MODEL_NAME} | **Device:** {DEVICE} | **Status:** {BEST_MODEL not None}")
+                gr.Markdown(f"**Model Name:** {MODEL_NAME} | **Device:** {DEVICE} | **Status:** {BEST_MODEL is not None}")
 
         predict_button.click(
             fn=predict_and_compare,
