@@ -140,7 +140,7 @@ def main():
     with gr.Blocks(theme=gr.themes.Soft(), title="🧠👁️ BrainVision") as demo:
         gr.Markdown("# Brain Tumor Segmentation Demo")
         gr.Markdown("Upload a brain MRI scan and an optional ground truth mask. The model will predict the tumor segmentation.")
-        with gr.Accordion("📖 How to Use", open=False):
+        with gr.Accordion("📖 How to Use", open=True):
             gr.Markdown("""
             1. Upload a brain MRI scan (required)
             2. Optionally upload ground truth mask for comparison
