@@ -90,7 +90,7 @@ def predict_and_compare(mri_image_np, ground_truth_mask_np):
     if mri_image_np is None:
         return None, None, "Error: Please upload a brain MRI image."
 
-    processed_image = mri_img_np.copy()
+    processed_image = mri_image_np.copy()
     if not ('raw' in MODEL_NAME.split('_')[0].lower()):
         processed_image = apply_clahe_and_median_filter(processed_image)
     val_transform = A.Compose([
@@ -103,10 +103,10 @@ def predict_and_compare(mri_image_np, ground_truth_mask_np):
     with torch.no_grad():
         output = BEST_MODEL(input_tensor)
 
-    pred_mask = (torch.sigmoid(output).squeeze().numpy() > 0.5).astype(np.uint8) * 255
+    pred_mask = (torch.sigmoid(output).squeeze().cpu().numpy() > 0.5).astype(np.uint8) * 255
     pred_mask_resized = cv2.resize(pred_mask, (mri_image_np.shape[1], mri_image_np.shape[0]))
  
-    pred_overlay = mri_img_np.copy()
+    pred_overlay = mri_image_np.copy()
     contours, _ = cv2.findContours(pred_mask_resized, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     cv2.drawContours(pred_overlay, contours, -1, (255, 0, 0), 2)  # Red for Prediction
 
@@ -118,7 +118,7 @@ def predict_and_compare(mri_image_np, ground_truth_mask_np):
         dice = dice_score(pred_mask_resized, gt_mask_resized)
         iou = iou_score(pred_mask_resized, gt_mask_resized)
         
-        comparison_output = mri_img_np.copy()
+        comparison_output = mri_image_np.copy()
         gt_contours, _ = cv2.findContours(gt_mask_resized, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         cv2.drawContours(comparison_output, gt_contours, -1, (0, 255, 0), 2) # Green for Ground Truth
         cv2.drawContours(comparison_output, contours, -1, (255, 0, 0), 2) # Red for Prediction
@@ -127,7 +127,7 @@ def predict_and_compare(mri_image_np, ground_truth_mask_np):
 
 def clear_interface():
     """Resets the Gradio interface."""
-    return None, None, gr.update(value=None), gr.update(value=None), gr.update(value=None), gr.update(value=None), ""
+    return None, None, "", np.nan, np.nan
 
 def main():
     try:
