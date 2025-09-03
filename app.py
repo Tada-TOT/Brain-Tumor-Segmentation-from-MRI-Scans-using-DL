@@ -43,7 +43,7 @@ def load_model_from_gdrive():
 
     model_path = os.path.join(PROJECT_PATH, safetensors_files[0])
     print(f"Found and loading model from: {model_path}")
-    MODEL_NAME = safetensors_file.split('.')[0]
+    MODEL_NAME = safetensors_files.split('.')[0]
     encode_name = MODEL_NAME.split('_')[1]
     model = smp.Unet(
         encoder_name=encoder_name,
