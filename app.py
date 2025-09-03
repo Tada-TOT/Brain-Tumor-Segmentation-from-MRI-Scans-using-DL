@@ -147,8 +147,8 @@ def main():
         with gr.Row():
             with gr.Column(scale=1):    
                 gr.Markdown("### Upload Images")
-                mri_input = gr.Image(type="numpy", label="Brain MRI (Required)", info="Upload a brain MRI scan.")
-                gt_mask_input = gr.Image(type="numpy", label="Ground Truth Mask (Optional)", info="Upload a corresponding mask image for performance evaluation (Dice Score).")
+                mri_input = gr.Image(type="numpy", label="Brain MRI (Required)")
+                gt_mask_input = gr.Image(type="numpy", label="Ground Truth Mask (Optional)")
                 with gr.Row():
                     predict_button = gr.Button("Predict", variant="primary")
                     clear_button = gr.Button("Clear")
