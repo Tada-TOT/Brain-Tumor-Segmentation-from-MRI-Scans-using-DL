@@ -8,8 +8,8 @@
 
 An end-to-end deep learning project for segmenting brain tumors from 2D MRI slices. This repository contains the full pipeline, from data analysis and preprocessing to model training, evaluation, and an interactive web demo.
 
-<div align="center">
 ![Sample MRI Scans](assets/data_sample.png)
+<div align="center">
 *Figure 1: Sample MRI scans showing tumor case with corresponding ground truth masks*
 </div>
 
