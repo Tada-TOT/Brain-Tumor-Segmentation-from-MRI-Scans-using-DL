@@ -10,7 +10,7 @@ An end-to-end deep learning project for segmenting brain tumors from 2D MRI slic
 
 ![Sample MRI Scans](assets/data_sample.png)
 <div align="center">
-*Figure 1: Sample MRI scans showing tumor case with corresponding ground truth masks*
+<b>Figure 1: Sample MRI scans showing tumor case with corresponding ground truth masks</b>
 </div>
 
 ***
@@ -68,9 +68,9 @@ The U-Net architecture consists of:
 - **Decoder**: Symmetric expanding path with skip connections
 - **Output**: Single-channel probability map with sigmoid activation
 
-<div align="center">
 ![U-Net Architecture](assets/u-net.png)
-*Figure 3: U-Net architecture with encoder-decoder structure and skip connections*
+<div align="center">
+<b>Figure 3: U-Net architecture with encoder-decoder structure and skip connections</b>
 </div>
 
 ---
@@ -186,9 +186,9 @@ pip install safetensors
 * Run `Phase 0: Environment Setup` and `Phase 3: User Interface`.
 > You may need to edit `app.py` since it gets `best_model_raw_resnet50.safetensors` using hard coded path.
 
-<div align="center">
 ![Gradio Interface](assets/demo.png)
-*Figure 4: Interactive web interface for real-time tumor segmentation*
+<div align="center">
+<b>Figure 4: Interactive web interface for real-time tumor segmentation</b>
 </div>
 
 ***
@@ -209,9 +209,9 @@ pip install safetensors
 3. **Preprocessing impact** was minimal, suggesting the models can learn robust features from raw data, or the filters were not adequate
 4. All models achieved **>88% Dice score**
 
-<div align="center">
 ![Training Curves](assets/comparison.png)
-*Figure 5: Training and validation loss curves for all model configurations*
+<div align="center">
+<b>Figure 5: Training and validation loss curves for all model configurations</b>
 </div>
 
 ***
