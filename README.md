@@ -151,9 +151,8 @@ Where: $$TP$$ = True Positive, $$TN$$ = True Negative, $$FP$$ = False Positive, 
 2. **Stage 2** (`15` epochs): Full network fine-tuning
    - Learning rate: `1e-5`
    - Optimizer: `AdamW`
-
-**Learning Rate Scheduling**:
-- ReduceLROnPlateau with `patience=3`, `factor=0.1`
+- **Batch Size:** 16
+- **Learning Rate Scheduling**: ReduceLROnPlateau with `patience=3`, `factor=0.1`
 
 ***
 
