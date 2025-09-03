@@ -121,8 +121,7 @@ def main():
           fn=predict_and_compare,
           inputs=[mri_input, gt_mask_input],
           outputs=[output_overlay, comparison_output, status_text])
-    
-    demo.launch(share=True)
+      demo.launch(share=True)
 
 if __name__ == "__main__":
   main()
