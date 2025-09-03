@@ -92,6 +92,8 @@ def iou_score(pred_mask, gt_mask):
 
 def predict_and_compare(best_model, mri_image_np, ground_truth_mask_np):
     """Predicts a tumor mask and compares it to a ground truth mask."""
+    mri_image_np = np.array(mri_image_np.convert('RGB')) if mri_pil_image else None
+    ground_truth_mask_np = np.array(ground_truth_mask_np.convert('L')) if ground_truth_pil_mask else None
     if BEST_MODEL is None:
         return None, None, "Error: Model not loaded. Please check model path."
     if mri_image_np is None:
@@ -158,8 +160,8 @@ def main():
         with gr.Row():
             with gr.Column(scale=1):    
                 gr.Markdown("### Upload Images")
-                mri_input = gr.Image(type="numpy", label="Brain MRI (Required)")
-                gt_mask_input = gr.Image(type="numpy", label="Ground Truth Mask (Optional)")
+                mri_input = gr.Image(type="pil", label="Brain MRI (Required) - 3 Channel RGB")
+                gt_mask_input = gr.Image(type="pil", label="Ground Truth Mask (Optional) - Binary Image")
                 with gr.Row():
                     predict_button = gr.Button("Predict", variant="primary")
                     clear_button = gr.Button("Clear")
