@@ -12,7 +12,7 @@ from albumentations.pytorch import ToTensorV2
 
 DRIVE_PATH = "/content/drive/MyDrive/"
 PROJECT_PATH = os.path.join(DRIVE_PATH, "SIC_Project_G9/")
-CONFIG_FILE_PATH = CONFIG_FILE_PATH = sys.argv[1] if len(sys.argv) > 1 else os.path.join(PROJECT_PATH, 'config.json')
+CONFIG_FILE_PATH = sys.argv[1] if len(sys.argv) > 1 else os.path.join(PROJECT_PATH, 'config.json')
 
 CFG = None
 BEST_MODEL = None
@@ -36,9 +36,14 @@ def apply_clahe_and_median_filter(image_np):
     image = cv2.medianBlur(image_np, CFG['FILTER_SIZE'])
     lab_img = cv2.cvtColor(image, cv2.COLOR_RGB2LAB)
     l, a, b = cv2.split(lab_img)
-    clahe = cv2.createCLAHE(clipLimit=CFG.CLIP_LIMIT, tileGridSize=tuple(CFG['GRID_SIZE']))
+    clahe = cv2.createCLAHE(clipLimit=CFG['CLIP_LIMIT'], tileGridSize=tuple(CFG['GRID_SIZE']))
     updated_l = clahe.apply(l)
     return cv2.cvtColor(cv2.merge((updated_l, a, b)), cv2.COLOR_LAB2RGB)
+
+def add_confidence_heatmap(output, confidence_map):
+    """Add confidence heatmap overlay"""
+    colored_confidence = cv2.applyColorMap((confidence_map * 255).astype(np.uint8), cv2.COLORMAP_JET)
+    return cv2.addWeighted(output, 0.7, colored_confidence, 0.3, 0)
 
 def load_model_from_gdrive():
     """Loads the single .safetensors model from the project folder."""
@@ -51,7 +56,7 @@ def load_model_from_gdrive():
             return "Error: Multiple .safetensors files found. Please keep only one."
 
         model_path = os.path.join(PROJECT_PATH, safetensors_files[0])
-        MODEL_NAME = safetensors_files[0].split('.')[0]
+        MODEL_NAME = '_'.join(safetensors_files[0].split('.')[0].split('_')[2:])
         encoder_name = MODEL_NAME.split('_')[1]
 
         model = smp.Unet(
@@ -117,14 +122,14 @@ def predict_and_compare(best_model, mri_image_np, ground_truth_mask_np):
     comparison_output = None
     if ground_truth_mask_np is not None:
         gt_mask_resized = cv2.resize(ground_truth_mask_np, (mri_image_np.shape[1], mri_image_np.shape[0]))
-        dice = dice_score(pred_mask_resized, gt_mask_np_resized)
-        iou = iou_score(pred_mask_resized, gt_mask_np_resized)
+        dice = dice_score(pred_mask_resized, gt_mask_resized)
+        iou = iou_score(pred_mask_resized, gt_mask_resized)
         status_msg += f" | Dice Score: {dice:.4f} | IoU Score: {iou:.4f}"
         
         comparison_output = mri_img_np.copy()
         gt_contours, _ = cv2.findContours(gt_mask_resized, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(comparison_overlay, gt_contours, -1, (0, 255, 0), 2) # Green for Ground Truth
-        cv2.drawContours(comparison_overlay, contours, -1, (255, 0, 0), 2) # Red for Prediction
+        cv2.drawContours(comparison_output, gt_contours, -1, (0, 255, 0), 2) # Green for Ground Truth
+        cv2.drawContours(comparison_output, contours, -1, (255, 0, 0), 2) # Red for Prediction
 
     return pred_overlay, comparison_output, status_msg
 
@@ -140,10 +145,16 @@ def main():
     except Exception as e:
         print(f"Error loading model: {e}")
     
-    with gr.Blocks(theme=gr.themes.Monochrome(), title="🧠👁️") as demo:
+    with gr.Blocks(theme=gr.themes.Soft(), title="🧠👁️") as demo:
         gr.Markdown("# Brain Tumor Segmentation Demo")
         gr.Markdown("Upload a brain MRI scan and an optional ground truth mask. The model will predict the tumor segmentation.")
-      
+        with gr.Accordion("📖 How to Use", open=False):
+            gr.Markdown("""
+            1. Upload a brain MRI scan (required)
+            2. Optionally upload ground truth mask for comparison
+            3. Click 'Predict' to run segmentation
+            4. View results with overlay visualization
+            """)
         with gr.Row():
             with gr.Column(scale=1):    
                 gr.Markdown("### Upload Images")
