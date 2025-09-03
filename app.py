@@ -81,7 +81,7 @@ def iou_score(pred_mask, gt_mask):
     union = np.logical_or(pred_mask, gt_mask).sum()
     return intersection / union if union > 0 else np.nan
 
-def predict_and_compare(mri_image_np, ground_truth_mask_np):
+def predict_and_compare(mri_image, ground_truth_mask):
     """Predicts a tumor mask and compares it to a ground truth mask."""
     mri_image_np = np.array(mri_image_np.convert('RGB')) if mri_image_np else None
     ground_truth_mask_np = np.array(ground_truth_mask_np.convert('L')) if ground_truth_mask_np else None
@@ -142,10 +142,10 @@ def main():
         gr.Markdown("Upload a brain MRI scan and an optional ground truth mask. The model will predict the tumor segmentation.")
         with gr.Accordion("📖 How to Use", open=True):
             gr.Markdown("""
-            1. Upload a brain MRI scan (required)
-            2. Optionally upload ground truth mask for comparison
-            3. Click 'Predict' to run segmentation
-            4. View results with overlay visualization
+            1. **Upload MRI Image** (required): Upload a brain MRI scan
+            2. **Upload Ground Truth** (optional): For performance evaluation
+            3. **Click Predict**: Run the segmentation model
+            4. **View Results**: See the predicted tumor mask overlaid on the original image
             """)
         with gr.Row():
             with gr.Column(scale=1):    
@@ -153,8 +153,8 @@ def main():
                 mri_input = gr.Image(type="pil", label="Brain MRI (Required) - 3 Channel RGB")
                 gt_mask_input = gr.Image(type="pil", label="Ground Truth Mask (Optional) - Binary Image")
                 with gr.Row():
-                    predict_button = gr.Button("Predict", variant="primary")
-                    clear_button = gr.Button("Clear")
+                    predict_button = gr.Button("🔮 Predict", variant="primary")
+                    clear_button = gr.Button("🗑️ Clear")
             with gr.Column(scale=2):
                 gr.Markdown("### Results")
                 with gr.Row():
