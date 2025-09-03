@@ -83,12 +83,12 @@ This section will be updated with the final results from the four experiments. T
 
 ## 👥 Team
 
-* [Abdulghani Khayat/Team Leader]
-* [Abdullah Alasqah]
-* [Fahad Alshalawi]
-* [Jana Alaseeri]
-* [Zainab Abdullah Alsadah]
-* [Mohammed Aljaddawi]
+* [Abdulghani Khayat/Team Leader]()
+* [Abdullah Alasqah]()
+* [Fahad Alshalawi]()
+* [Jana Alaseeri]()
+* [Zainab Alsadah]()
+* [Mohammed Aljaddawi]()
 
 ***
 
